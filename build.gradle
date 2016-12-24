@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.sparkjava:spark-core:2.5.4'
+    compile 'org.slf4j:slf4j-simple:1.7.21'
+    compile 'com.sparkjava:spark-template-mustache:2.3'
+    compile 'com.github.spullara.mustache.java:compiler:0.9.2'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'com.google.guava:guava:20.0'
+
+    testCompile 'junit:junit:4.12'
+}
