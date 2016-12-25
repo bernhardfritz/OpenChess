@@ -6,9 +6,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class Board {
-	Map<Pair<File, Rank>, Pair<Piece, Color>> board;
+	private int id = 1;
+	private Map<Pair<File, Rank>, Pair<Piece, Color>> board;
 	
 	public Board() {
 		board = new HashMap<>();
@@ -49,6 +53,26 @@ public class Board {
 	
 	public Pair<Piece, Color> get(File file, Rank rank) {
 		return board.get(new ImmutablePair<>(file, rank));
+	}
+	
+	public String toJson() {
+		JsonObject root = new JsonObject();
+		root.addProperty("id", id);
+		JsonArray pieces = new JsonArray();
+		for (File f : File.values()) {
+			for (Rank r : Rank.values()) {
+				Pair<Piece, Color> pair = board.get(new ImmutablePair<>(f, r));
+				if (pair != null) {
+					JsonObject piece = new JsonObject();
+					piece.addProperty("type", pair.getLeft().name());
+					piece.addProperty("color", pair.getRight().name());
+					piece.addProperty("position", f.getValue() + r.getValue());
+					pieces.add(piece);
+				}
+			}
+		}
+		root.add("pieces", pieces);
+		return new Gson().toJson(root);
 	}
 	
 	@Override

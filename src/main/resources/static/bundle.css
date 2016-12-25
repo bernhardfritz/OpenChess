@@ -1,0 +1,25 @@
+.white {
+  color: #ffffff;
+}
+.black {
+  color: #000000;
+}
+tr:nth-child(odd) td:nth-child(odd),
+tr:nth-child(even) td:nth-child(even) {
+  background: #ffce9e;
+}
+tr:nth-child(odd) td:nth-child(even),
+tr:nth-child(even) td:nth-child(odd) {
+  background: #d18b47;
+}
+td {
+  width: 12.5vmin;
+  height: 12.5vmin;
+  line-height: 12.5vmin;
+  text-align: center;
+}
+.glyphicon {
+  font-size: 7.5vmin;
+  vertical-align: middle;
+  top: 0;
+}

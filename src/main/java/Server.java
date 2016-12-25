@@ -1,11 +1,11 @@
-import static spark.Spark.*;
-
-import spark.ModelAndView;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.staticFileLocation;
 
 public class Server {
 	public static void main(String[] args) {
-		staticFileLocation("/public");
-        get("/", (req, res) -> new ModelAndView(new BoardContext(new Board(), Color.WHITE), "chess.mustache"), new MustacheTemplateEngine());
-        exception(Exception.class, (exception, request, response) -> exception.printStackTrace());
+		staticFileLocation("/static");
+        get("/boards/:id", (req, res) -> new Board().toJson());
+        exception(Exception.class, (e, req, res) -> e.printStackTrace());
 	}
 }

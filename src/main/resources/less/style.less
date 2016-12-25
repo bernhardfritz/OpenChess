@@ -1,22 +1,27 @@
+@white: #ffffff;
+@black: #000000;
+@light: #ffce9e;
+@dark: #d18b47;
+
 .white {
-	color: white;
+	color: @white;
 }
 
 .black {
-	color: black;
+	color: @black;
 }
 
 tr:nth-child(odd) td:nth-child(odd), tr:nth-child(even) td:nth-child(even) {
-	background: #FFCE9E;
+	background: @light;
 }
 
 tr:nth-child(odd) td:nth-child(even), tr:nth-child(even) td:nth-child(odd) {
-	background: #D18B47;
+	background: @dark;
 }
 
 td {
-	min-width: 12.5vmin;
-	min-height: 12.5vmin;
+	width: 12.5vmin;
+	height: 12.5vmin;
   line-height: 12.5vmin;
 	text-align: center;
 }
