@@ -1,3 +1,7 @@
 public enum Color {
-	WHITE, BLACK
+	WHITE, BLACK;
+	
+	public Color getOpposite() {
+		return WHITE == this ? BLACK : WHITE;
+	}
 }
