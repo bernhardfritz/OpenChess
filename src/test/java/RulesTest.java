@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 public class RulesTest {
 	@Test
 	public void pawnMovement() {
-		Board board = new Board(1);
+		Board board = Board.create();
 		Movement e2_e3 = new Movement(File.E, Rank.TWO, File.E, Rank.THREE);
 		assertTrue(Rules.isLegitMovement(board, e2_e3)); // test movement of white pawn from e2 to e3
 		Movement e2_e4 = new Movement(File.E, Rank.TWO, File.E, Rank.FOUR);

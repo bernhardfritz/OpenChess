@@ -1,6 +1,7 @@
-var Backbone = require('backbone');
+var $ = global.jQuery = require('jquery');
+require('jquery-ui-browserify');
 var _ = require('underscore');
-var $ = require('jquery');
+var Backbone = require('backbone');
 
 var files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 var ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -49,6 +50,20 @@ var ChessboardView = Backbone.View.extend({
       var piece = model.toJSON();
       $('#'+ piece.position).html('<span class="glyphicon ' + glyphicons[piece.type] + ' ' + colors[piece.color] + '" />');
     });
+
+    $('table td span').draggable({
+      revert: true,
+      helper: "clone",
+      containment: "document",
+      start: function(event, ui) {
+        $(this).hide();
+        ui.helper.zIndex(1);
+      },
+      stop: function(event, ui) {
+        $(this).show();
+      }
+    });
+
     return this;
   }
 });
@@ -68,6 +83,16 @@ function renderBoardLayout(id) {
 
 $(function() {
   renderBoardLayout('#chessboard');
+
+  $('table td').droppable({
+    drop: function(event, ui) {
+        ui.helper.hide();
+        var span = ui.draggable.detach();
+        span.appendTo($(this));
+        span.show();
+    }
+  });
+
   var pieceCollection = new PieceCollection();
   var chessboardView = new ChessboardView({collection: pieceCollection});
 });

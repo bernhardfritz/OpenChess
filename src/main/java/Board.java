@@ -16,19 +16,29 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class Board {
-	private int id;
+	private long id;
 	private Color turn;
 	private Color check;
 	private Map<Pair<File, Rank>, Pair<Piece, Color>> squares;
 	private List<Movement> movements;
 	
-	public Board(int id) {
-		this.id = id;
+	public Board() {
+		id = -1;
 		turn = Color.WHITE;
 		check = null;
 		squares = new HashMap<>();
 		movements = new ArrayList<>();
-		setup();
+	}
+	
+	public static Board create() {
+		Board board = null;
+		try {
+			board = ForsythEdwardsNotation.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		} catch(Exception e) {
+			// do nothing
+		}
+		// TODO generate and set id
+		return board;
 	}
 	
 	public Board(Board board) {
@@ -45,44 +55,16 @@ public class Board {
 		}
 	}
 	
-	public void setup() {
-		// kings
-		squares.put(new ImmutablePair<>(File.E, Rank.ONE), new ImmutablePair<>(Piece.KING, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.E, Rank.EIGHT), new ImmutablePair<>(Piece.KING, Color.BLACK));
-		
-		// queens
-		squares.put(new ImmutablePair<>(File.D, Rank.ONE), new ImmutablePair<>(Piece.QUEEN, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.D, Rank.EIGHT), new ImmutablePair<>(Piece.QUEEN, Color.BLACK));
-		
-		// rooks
-		squares.put(new ImmutablePair<>(File.A, Rank.ONE), new ImmutablePair<>(Piece.ROOK, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.H, Rank.ONE), new ImmutablePair<>(Piece.ROOK, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.A, Rank.EIGHT), new ImmutablePair<>(Piece.ROOK, Color.BLACK));
-		squares.put(new ImmutablePair<>(File.H, Rank.EIGHT), new ImmutablePair<>(Piece.ROOK, Color.BLACK));
-		
-		// bishops
-		squares.put(new ImmutablePair<>(File.C, Rank.ONE), new ImmutablePair<>(Piece.BISHOP, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.F, Rank.ONE), new ImmutablePair<>(Piece.BISHOP, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.C, Rank.EIGHT), new ImmutablePair<>(Piece.BISHOP, Color.BLACK));
-		squares.put(new ImmutablePair<>(File.F, Rank.EIGHT), new ImmutablePair<>(Piece.BISHOP, Color.BLACK));
-		
-		// knights
-		squares.put(new ImmutablePair<>(File.B, Rank.ONE), new ImmutablePair<>(Piece.KNIGHT, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.G, Rank.ONE), new ImmutablePair<>(Piece.KNIGHT, Color.WHITE));
-		squares.put(new ImmutablePair<>(File.B, Rank.EIGHT), new ImmutablePair<>(Piece.KNIGHT, Color.BLACK));
-		squares.put(new ImmutablePair<>(File.G, Rank.EIGHT), new ImmutablePair<>(Piece.KNIGHT, Color.BLACK));
-		
-		// pawns
-		Arrays.asList(File.values()).forEach((f) -> squares.put(new ImmutablePair<>(f, Rank.TWO), new ImmutablePair<>(Piece.PAWN, Color.WHITE)));
-		Arrays.asList(File.values()).forEach((f) -> squares.put(new ImmutablePair<>(f, Rank.SEVEN), new ImmutablePair<>(Piece.PAWN, Color.BLACK)));
-	}
-	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	
 	public Color getTurn() {
 		return turn;
+	}
+	
+	public void setTurn(Color turn) {
+		this.turn = turn;
 	}
 	
 	public Color getCheck() {
@@ -95,6 +77,10 @@ public class Board {
 	
 	public Pair<Piece, Color> getSquare(File file, Rank rank) {
 		return squares.get(new ImmutablePair<>(file, rank));
+	}
+	
+	public void setSquare(File file, Rank rank, Piece piece, Color color) {
+		squares.put(new ImmutablePair<>(file, rank), new ImmutablePair<>(piece, color));
 	}
 	
 	public Pair<File, Rank> getPosition(Pair<Piece, Color> uniquePiece) {
@@ -340,4 +326,6 @@ public class Board {
 		Lists.reverse(Arrays.asList(Rank.values())).forEach((r) -> Arrays.asList(File.values()).forEach((f) -> sb.append(squares.get(new ImmutablePair<File, Rank>(f, r)))));
 		return sb.toString();
 	}
+	
 }
+

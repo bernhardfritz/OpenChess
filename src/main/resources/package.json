@@ -2,7 +2,7 @@
   "name": "openchess",
   "version": "1.0.0",
   "description": "",
-  "main": "browser/main.js",
+  "main": "js/client.js",
   "scripts": {
     "watch-css": "catw -c 'lessc -' 'less/*.less' -o static/bundle.css -v",
     "watch-js": "watchify js/*.js -o static/bundle.js -dv -t [ babelify --presets [ es2015 ] ]",
@@ -24,6 +24,7 @@
   "dependencies": {
     "backbone": "^1.3.3",
     "jquery": "^3.1.1",
+    "jquery-ui-browserify": "^1.11.0-pre-seelio",
     "less": "^2.7.1",
     "socket.io-client": "^1.7.2"
   },
