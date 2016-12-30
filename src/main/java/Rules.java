@@ -122,7 +122,7 @@ public class Rules {
 			Pair<Piece, Color> previousToSquare = getToSquare(board, previousMovement);
 			int previousDeltaRank = getDeltaRank(previousMovement);
 			int previousAbsDeltaFile = Math.abs(getDeltaFile(previousMovement));			
-			return Piece.PAWN == fromSquare.getLeft() && toSquare == null && absDeltaFile == 1 && Piece.PAWN == previousToSquare.getLeft() && (Color.WHITE == fromSquare.getRight() ? Rank.SEVEN == previousMovement.getFromRank() && previousDeltaRank == 2 && previousAbsDeltaFile == 0 : Rank.TWO == previousMovement.getFromRank() && previousDeltaRank == -2 && previousAbsDeltaFile == 0);
+			return Piece.PAWN == fromSquare.getLeft() && toSquare == null && absDeltaFile == 1 && Piece.PAWN == previousToSquare.getLeft() && (Color.WHITE == fromSquare.getRight() ? Rank.SEVEN == previousMovement.getFromRank() && previousDeltaRank == 2 && previousAbsDeltaFile == 0 && Rank.FIVE == movement.getFromRank(): Rank.TWO == previousMovement.getFromRank() && previousDeltaRank == -2 && previousAbsDeltaFile == 0 && Rank.FOUR == movement.getFromRank());
 		}
 		return false;
 	}

@@ -37,7 +37,7 @@ public class Board {
 		} catch(Exception e) {
 			// do nothing
 		}
-		// TODO generate and set id
+		board.id = Database.getInstance().putBoard(board);
 		return board;
 	}
 	

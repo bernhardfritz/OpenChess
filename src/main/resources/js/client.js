@@ -18,36 +18,73 @@ var colors = {
   BLACK: 'black'
 };
 
-var PieceModel = Backbone.Model.extend({
+var MovementModel = Backbone.Model.extend({
   defaults: {
-    type: null,
-    color: null,
-    position: null
+    from: null,
+    to: null
+  },
+
+  sync: function(method, model, options) {
+    options = options || {};
+    var methodToURL = {
+        'create': '/boards/' + options.id + '/movement',
+        'read': '', // not allowed
+        'update': '', // not allowed
+        'delete': '' // not allowed
+    };
+    options.url = methodToURL[method.toLowerCase()];
+    return Backbone.sync.apply(this, arguments);
   }
 });
 
-var PieceCollection = Backbone.Collection.extend({
-  url: '/boards/1',
-  model: PieceModel,
+var BoardModel = Backbone.Model.extend({
+  defaults: {
+    id: null,
+    pieces: []
+  },
 
-  parse: function(data) {
-    return data.pieces;
+  addMovement: function(from, to, callback) {
+    var self = this;
+    var movement = new MovementModel({from: from, to: to});
+    movement.save(null, {
+      id: self.get('id'),
+      success: callback
+    });
+  },
+
+  sync: function(method, model, options) {
+    options = options || {};
+    var methodToURL = {
+      'create': '/boards',
+      'read': '/boards/' + model.id,
+      'update': '', // not allowed
+      'delete': '' // not allowed
+    };
+    options.url = methodToURL[method.toLowerCase()];
+    return Backbone.sync.apply(this, arguments);
   }
 });
 
 var ChessboardView = Backbone.View.extend({
   initialize: function() {
     var self = this;
-    this.collection.fetch({
-      success: function() {
-        self.render();
-      }
-    });
+    if (this.model.get('id')) {
+      this.model.fetch({
+        success: function() {
+          self.render();
+        }
+      });
+    } else {
+      this.model.save(null, {
+        success: function() {
+          self.render();
+        }
+      });
+    }
   },
 
   render: function() {
-    this.collection.each((model) => {
-      var piece = model.toJSON();
+    this.model.toJSON().pieces.forEach((piece) => {
       $('#'+ piece.position).html('<span class="glyphicon ' + glyphicons[piece.type] + ' ' + colors[piece.color] + '" />');
     });
 
@@ -84,15 +121,20 @@ function renderBoardLayout(id) {
 $(function() {
   renderBoardLayout('#chessboard');
 
+  var board = new BoardModel();
+  var chessboard = new ChessboardView({model: board});
+
   $('table td').droppable({
     drop: function(event, ui) {
+      var from = ui.draggable.closest('td').attr('id');
+      var to = $(this).attr('id');
+      board.addMovement(from, to, function() {
         ui.helper.hide();
+        $(this).empty();
         var span = ui.draggable.detach();
         span.appendTo($(this));
         span.show();
+      }.bind(this, ui));
     }
   });
-
-  var pieceCollection = new PieceCollection();
-  var chessboardView = new ChessboardView({collection: pieceCollection});
 });
