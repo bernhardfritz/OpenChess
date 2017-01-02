@@ -1,13 +1,17 @@
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 public class Database {
-	private Map<Long, Board> boards;
 	private long boardId;
+	private Map<Long, Board> boards;
+	private Map<String, Game> games;
 	
 	private Database() {
-		boards = new HashMap<>();
 		boardId = 0L;
+		boards = new HashMap<>();
+		games = new HashMap<>();
 	}
 	
 	private static class LazyHolder {
@@ -29,5 +33,18 @@ public class Database {
 	
 	public Board getBoard(long id) {
 		return boards.get(id);
+	}
+	
+	public String putGame(Game game) {
+		String hash = RandomStringUtils.randomAlphabetic(8);
+		if (games.containsKey(hash)) {
+			return putGame(game);
+		}
+		games.put(hash, game);
+		return hash;
+	}
+	
+	public Game getGame(String hash) {
+		return games.get(hash);
 	}
 }

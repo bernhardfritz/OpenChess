@@ -21,7 +21,8 @@ var colors = {
 var MovementModel = Backbone.Model.extend({
   defaults: {
     from: null,
-    to: null
+    to: null,
+    token: null
   },
 
   sync: function(method, model, options) {
@@ -40,15 +41,39 @@ var MovementModel = Backbone.Model.extend({
 var BoardModel = Backbone.Model.extend({
   defaults: {
     id: null,
-    pieces: []
+    pieces: [],
+    token: null
+  },
+
+  update: function(data, updateView) {
+    var pieces = this.get('pieces');
+    var fromPiece = _.findWhere(pieces, {position: data.from});
+    var fromIndex = pieces.indexOf(fromPiece);
+    var toPiece = _.findWhere(pieces, {position: data.to});
+    var toIndex = pieces.indexOf(toPiece);
+    pieces[fromIndex].position = data.to;
+    if (toIndex > -1) {
+      pieces.splice(toIndex, 1);
+    }
+    this.set({pieces: pieces});
+    if (updateView) {
+      var spanFrom = $('#' + data.from + ' span').detach();
+      var tdTo = $('#' + data.to);
+      tdTo.empty();
+      spanFrom.appendTo(tdTo);
+      this.set({token: data.token});
+    }
   },
 
   addMovement: function(from, to, callback) {
     var self = this;
-    var movement = new MovementModel({from: from, to: to});
+    var movement = new MovementModel({from: from, to: to, token: self.get('token')});
     movement.save(null, {
       id: self.get('id'),
-      success: callback
+      success: function() {
+        self.update({from: from, to: to});
+        callback();
+      }
     });
   },
 
@@ -68,14 +93,11 @@ var BoardModel = Backbone.Model.extend({
 var ChessboardView = Backbone.View.extend({
   initialize: function() {
     var self = this;
+
+    this.model.set({id: $('#chessboard').attr('rel')});
+
     if (this.model.get('id')) {
       this.model.fetch({
-        success: function() {
-          self.render();
-        }
-      });
-    } else {
-      this.model.save(null, {
         success: function() {
           self.render();
         }
@@ -123,6 +145,18 @@ $(function() {
 
   var board = new BoardModel();
   var chessboard = new ChessboardView({model: board});
+  var ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/ws");
+  ws.onopen = function(event) {
+    ws.send(JSON.stringify({type: 'HASH', hash: window.location.href.substr(window.location.href.lastIndexOf('/') + 1)}));
+  };
+  ws.onmessage = function(message) {
+    var data = JSON.parse(message.data);
+    switch(data.type) {
+        case 'MOVEMENT':
+          board.update(data, true);
+          break;
+    }
+  };
 
   $('table td').droppable({
     drop: function(event, ui) {

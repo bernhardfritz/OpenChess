@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Observable;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,12 +17,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class Board {
+public class Board extends Observable {
 	private long id;
 	private Color turn;
 	private Color check;
 	private Map<Pair<File, Rank>, Pair<Piece, Color>> squares;
 	private List<Movement> movements;
+	private String token; // token is only valid for one turn
+	private boolean once;
 	
 	public Board() {
 		id = -1;
@@ -28,6 +32,8 @@ public class Board {
 		check = null;
 		squares = new HashMap<>();
 		movements = new ArrayList<>();
+		refreshToken();
+		once = true;
 	}
 	
 	public static Board create() {
@@ -53,6 +59,8 @@ public class Board {
 		for (Movement movement : movements) {
 			movements.add(movement);
 		}
+		this.token = board.token;
+		this.once = board.once;
 	}
 	
 	public long getId() {
@@ -101,6 +109,17 @@ public class Board {
 		Pair<Piece, Color> square = squares.put(new ImmutablePair<File, Rank>(movement.getFromFile(), movement.getFromRank()), null);
 		squares.put(new ImmutablePair<File, Rank>(movement.getToFile(), movement.getToRank()), square);
 		turn = turn.getOpposite();
+		refreshToken();
+		setChanged();
+	    notifyObservers();
+	}
+	
+	public String getToken() {
+		return token;
+	}
+	
+	public void refreshToken() {
+		token = RandomStringUtils.randomAlphabetic(8);
 	}
 	
 	public boolean isThreatened(File file, Rank rank) {
@@ -315,6 +334,10 @@ public class Board {
 					pieces.add(piece);
 				}
 			}
+		}
+		if (once) {
+			root.addProperty("token", token);
+			once = false;
 		}
 		root.add("pieces", pieces);
 		return new Gson().toJson(root);

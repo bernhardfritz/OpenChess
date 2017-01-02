@@ -17,7 +17,7 @@ public class Rules {
 				case KNIGHT: legitMovement = isLegitKnightMovement(board, movement); break;
 				case PAWN: legitMovement = isLegitPawnMovement(board, movement); break;
 			}
-			legitMovement = legitMovement && fromSquare.getRight() == board.getTurn() && !isCollision(board, movement) && !isCheckAfterMovement(board, movement);
+			legitMovement = legitMovement && fromSquare.getRight() == board.getTurn() && board.getToken().equals(movement.getToken()) && !isCollision(board, movement) && !isCheckAfterMovement(board, movement);
 		}
 		return legitMovement;
 	}
